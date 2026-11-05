@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOL Synergy - Weekly Schedule & Faculty Allocation Matrix</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 2mm !important;
+            }
+            body { 
+                background: white !important; 
+                color: black !important; 
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-size: 5.5px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            header, footer, .no-print { display: none !important; }
+            .print-container { display: flex !important; flex-direction: row !important; gap: 4px !important; width: 100% !important; align-items: flex-start !important; margin: 0 !important; padding: 0 !important; }
+            .print-table-box { flex: 9 !important; padding: 1px !important; }
+            .print-dir-box { flex: 3 !important; padding: 1px !important; }
+            .shadow-sm, .shadow, .rounded-2xl, .rounded-xl { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 5.5px !important; }
+            th, td { padding: 1px !important; }
+            select { background-color: var(--print-bg, transparent) !important; color: var(--print-color, black) !important; border: none !important; appearance: none; font-weight: bold; text-align: center; }
+            
+            html, body {
+                height: 100% !important;
+                overflow: hidden !important;
+            }
+        }
+        .sunday-col { background-color: #fef2f2 !important; color: #991b1b !important; }
+        .branch-header { background-color: #cbd5e1 !important; color: #1e293b !important; font-weight: bold; }
+        select.faculty-select {
+            text-align: center;
+            text-align-last: center;
+            padding: 1px;
+            font-size: 9px;
+            font-weight: bold;
+            height: 17px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="location.reload()">
+                <div class="bg-white text-blue-900 p-2 rounded-lg font-bold text-lg shadow">
+                    <i class="fa-solid fa-anchor"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">MOL Synergy Training Portal</h1>
+                    <p class="text-[11px] text-blue-200">Schedule Allocation & Faculty Matrix</p>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 shadow">
+                    <i class="fa-solid fa-file-pdf"></i><span>Save as PDF</span>
+                </button>
+                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-1 shadow">
+                    <i class="fa-solid fa-print"></i><span>Print Report</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+
+        <!-- Setup & Leaves Section (Hidden during print) -->
+        <div class="space-y-4 no-print">
+            
+            <!-- Schedule Title & Date Range Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold text-slate-900 border-b pb-1.5 flex items-center">
+                    <i class="fa-solid fa-calendar-days mr-2 text-blue-600"></i>Schedule Setup & Date Range
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Schedule Title</label>
+                        <input type="text" id="scheduleTitle" value="MAST - FACULTY ALLOCATION - NOV 2026" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">From Date</label>
+                        <input type="date" id="fromDate" value="2026-11-02" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">To Date</label>
+                        <input type="date" id="toDate" value="2026-11-08" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave Management Card -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold text-slate-900 border-b pb-1.5 flex items-center">
+                    <i class="fa-solid fa-umbrella-beach mr-2 text-amber-600"></i>Leave Management Box
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Filter Employee</label>
+                        <input type="text" id="searchEmployee" placeholder="Search name..." onkeyup="filterEmployeeDropdown()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Employee Name</label>
+                        <select id="leaveFaculty" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none">
+                            <option value="">-- Select Leave Employee --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">From Date</label>
+                        <input type="date" id="leaveFromDate" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">To Date</label>
+                        <input type="date" id="leaveToDate" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none">
+                    </div>
+                    <div>
+                        <button onclick="addLeaveRecord()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-lg text-xs font-semibold transition shadow">
+                            Add Leave Record
+                        </button>
+                    </div>
+                </div>
+                <div id="leaveDisplayList" class="text-xs text-rose-600 font-medium pt-1"></div>
+            </div>
+
+            <!-- Generate Button -->
+            <div>
+                <button onclick="generateMatrix()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-bold transition shadow flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-table-cells"></i><span>Generate Matrix Table & View</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Workspace: Matrix Table & Side Directory -->
+        <div id="workspaceContainer" class="print-container grid grid-cols-1 lg:grid-cols-12 gap-4 hidden">
+            
+            <!-- Left: Matrix Table (lg:col-span-9) -->
+            <div class="print-table-box lg:col-span-9 bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 id="displayScheduleTitle" class="text-xs font-bold text-slate-900 uppercase">MAST - FACULTY ALLOCATION - NOV 2026</h3>
+                    <div class="no-print">
+                        <button onclick="addNewCourseRow()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded text-[11px] font-semibold transition shadow flex items-center space-x-1">
+                            <i class="fa-solid fa-plus"></i><span>Add Course</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Print Leaves Summary -->
+                <div id="printLeaveSummary" class="text-[8px] text-rose-700 font-medium pb-1 hidden print:block">
+                    <b>Leaves:</b> None recorded
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table id="matrixTable" class="w-full text-left border-collapse text-xs">
+                        <thead id="matrixHeader" class="bg-emerald-800 text-white">
+                            <!-- Dynamic Header -->
+                        </thead>
+                        <tbody id="matrixBody" class="divide-y divide-slate-200">
+                            <!-- Dynamic Body -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right: Side Faculty Directory Panel (lg:col-span-3) -->
+            <div class="print-dir-box lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-3 space-y-2">
+                <h3 class="text-xs font-bold text-slate-900 border-b pb-1.5 flex items-center justify-between">
+                    <span><i class="fa-solid fa-users mr-1 text-blue-600"></i>Faculty Directory</span>
+                </h3>
+                <div id="facultyDirectoryList" class="space-y-1">
+                    <!-- Dynamic Badges List -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="bg-white border-t border-slate-200 py-3 mt-8 text-center text-xs text-slate-500 no-print">
+        Designed and developed by Gaurav Srivastav
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const facultyList = [
+            { name: "Balasubramanian R", code: "BR", color: "bg-red-800 text-white", hexBg: "#991b1b", hexText: "#ffffff" },
+            { name: "Dr. Sairam K", code: "SK", color: "bg-purple-700 text-white", hexBg: "#7e22ce", hexText: "#ffffff" },
+            { name: "Capt. Satheesh Ramkumar", code: "SR", color: "bg-slate-700 text-white", hexBg: "#334155", hexText: "#ffffff" },
+            { name: "Gokulnath A", code: "GA", color: "bg-emerald-700 text-white", hexBg: "#047857", hexText: "#ffffff" },
+            { name: "Capt. Md. Shadab", code: "MS", color: "bg-blue-800 text-white", hexBg: "#1e40af", hexText: "#ffffff" },
+            { name: "Capt. Parag Mokashi", code: "PM", color: "bg-amber-600 text-white", hexBg: "#d97706", hexText: "#ffffff" },
+            { name: "Rajesh Kumar", code: "RK", color: "bg-rose-700 text-white", hexBg: "#be123c", hexText: "#ffffff" },
+            { name: "Capt. Kadiravan R", code: "KR", color: "bg-blue-600 text-white", hexBg: "#2563eb", hexText: "#ffffff" },
+            { name: "Capt. Rahul Kumar Bhargav", code: "RB", color: "bg-blue-900 text-white", hexBg: "#1e3a8a", hexText: "#ffffff" },
+            { name: "Pravin Kumar Jayakumar", code: "PK", color: "bg-pink-700 text-white", hexBg: "#be185d", hexText: "#ffffff" },
+            { name: "Capt. Apoorva B", code: "AB", color: "bg-emerald-600 text-white", hexBg: "#059669", hexText: "#ffffff" },
+            { name: "Anurag Jha", code: "AJ", color: "bg-amber-500 text-white", hexBg: "#f59e0b", hexText: "#ffffff" },
+            { name: "Capt. Amanpreet Singh", code: "AS", color: "bg-slate-600 text-white", hexBg: "#475569", hexText: "#ffffff" },
+            { name: "Capt. Vikas Malik", code: "VM", color: "bg-emerald-800 text-white", hexBg: "#065f46", hexText: "#ffffff" },
+            { name: "Alok Verma", code: "AV", color: "bg-amber-700 text-white", hexBg: "#b45309", hexText: "#ffffff" },
+            { name: "Capt. Anil Kumar Malik", code: "AM", color: "bg-blue-700 text-white", hexBg: "#1d4ed8", hexText: "#ffffff" }
+        ];
+
+        let branchCourses = [
+            { branch: "Synergy", courses: [
+                { code: "7", name: "Danish Maritime Law (DML) & Para 16" },
+                { code: "8", name: "Crew Safety Training - Trainer 1" },
+                { code: "8A", name: "Crew Safety Training - Trainer 2" },
+                { code: "10", name: "Bridge Team Resource Management" },
+                { code: "14", name: "Engine Room Resource Management" },
+                { code: "19", name: "Advanced Chemical Tanker Operation - Officers" },
+                { code: "24", name: "Senior/Junior Officers - Briefing - Online" }
+            ]},
+            { branch: "Mumbai", courses: [
+                { code: "1", name: "Crew Safety Training - Trainer 1" },
+                { code: "1A", name: "Crew Safety Training - Trainer 2" },
+                { code: "2", name: "Bridge Team Resource Management" },
+                { code: "5", name: "Engine Room Resource Management" },
+                { code: "8", name: "LCHS - Oil Tankers" }
+            ]},
+            { branch: "New Delhi", courses: [
+                { code: "1", name: "Crew Safety Training - Trainer 1" },
+                { code: "1A", name: "Crew Safety Training - Trainer 2" },
+                { code: "2A", name: "Bridge Team Resource Management - AM" },
+                { code: "5", name: "Engine Room Resource Management" },
+                { code: "7", name: "Advanced Chemical Tanker Operation - Officers" }
+            ]},
+            { branch: "MOLTA", courses: [
+                { code: "11", name: "Bridge Resource Management - BRM" },
+                { code: "11A", name: "Bridge Resource Management - BRM - Additional Instructor" },
+                { code: "15", name: "Engine Resource Management - ERM" },
+                { code: "15A", name: "Engine Resource Management - ERM - Additional Instructor" }
+            ]},
+            { branch: "DNS Supplementary", courses: [
+                { code: "1", name: "DNS Supplementary Session - Chennai" }
+            ]}
+        ];
+
+        let leaveRecords = [];
+        let allocations = {};
+
+        window.onload = function() {
+            renderFacultyDirectory();
+            populateEmployeeDropdown();
+            renderLeaveList();
+        };
+
+        function renderFacultyDirectory() {
+            let listDiv = document.getElementById('facultyDirectoryList');
+            listDiv.innerHTML = '';
+            facultyList.forEach(f => {
+                listDiv.innerHTML += `
+                    <div class="flex items-center justify-between p-1 rounded border border-slate-100 bg-slate-50 text-[10px]">
+                        <span class="font-semibold text-slate-700 truncate max-w-[130px]" title="${f.name}">${f.name}</span>
+                        <span class="px-1.5 py-0.5 rounded text-[8px] font-bold ${f.color}">${f.code}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function populateEmployeeDropdown() {
+            let select = document.getElementById('leaveFaculty');
+            select.innerHTML = '<option value="">-- Select Leave Employee --</option>';
+            facultyList.forEach(f => {
+                select.innerHTML += `<option value="${f.name}">${f.name} (${f.code})</option>`;
+            });
+        }
+
+        function filterEmployeeDropdown() {
+            let search = document.getElementById('searchEmployee').value.toLowerCase();
+            let select = document.getElementById('leaveFaculty');
+            select.innerHTML = '<option value="">-- Select Leave Employee --</option>';
+            facultyList.filter(f => f.name.toLowerCase().includes(search)).forEach(f => {
+                select.innerHTML += `<option value="${f.name}">${f.name} (${f.code})</option>`;
+            });
+        }
+
+        function addLeaveRecord() {
+            let fac = document.getElementById('leaveFaculty').value;
+            if(!fac) { alert('Please select an employee'); return; }
+            let from = document.getElementById('leaveFromDate').value;
+            let to = document.getElementById('leaveToDate').value || from;
+            if(!from) { alert('Please select leave from date'); return; }
+            leaveRecords.push({ faculty: fac, from: from, to: to });
+            renderLeaveList();
+            alert('Leave recorded successfully.');
+        }
+
+        function renderLeaveList() {
+            let listDiv = document.getElementById('leaveDisplayList');
+            let printSummary = document.getElementById('printLeaveSummary');
+            if(leaveRecords.length === 0) {
+                listDiv.innerHTML = "";
+                if(printSummary) printSummary.innerHTML = "<b>Leaves:</b> None recorded";
+                return;
+            }
+            
+            let leaveTexts = leaveRecords.map(l => {
+                let dateStr = (l.from === l.to) ? l.from : `${l.from} to ${l.to}`;
+                return `${l.faculty} (${dateStr})`;
+            });
+            
+            let txt = "Active Leaves: " + leaveTexts.join(', ');
+            listDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>${txt}`;
+            
+            let printTexts = leaveRecords.map(l => {
+                let dateStr = (l.from === l.to) ? l.from : `${l.from} to ${l.to}`;
+                return `${l.faculty} [${dateStr}]`;
+            });
+            if(printSummary) printSummary.innerHTML = `<b>Leaves Details:</b> ${printTexts.join(' | ')}`;
+        }
+
+        function generateMatrix() {
+            let title = document.getElementById('scheduleTitle').value;
+            document.getElementById('displayScheduleTitle').innerText = title;
+
+            let fromStr = document.getElementById('fromDate').value;
+            let toStr = document.getElementById('toDate').value;
+
+            if(!fromStr || !toStr) { alert('Please select From and To date'); return; }
+
+            let startDate = new Date(fromStr);
+            let endDate = new Date(toStr);
+
+            let dates = [];
+            let curr = new Date(startDate);
+            while(curr <= endDate) {
+                dates.push(new Date(curr));
+                curr.setDate(curr.getDate() + 1);
+            }
+
+            // Sort dates so Sunday comes at the last position of the week view
+            dates.sort((a, b) => {
+                let dayA = a.getDay() === 0 ? 7 : a.getDay();
+                let dayB = b.getDay() === 0 ? 7 : b.getDay();
+                return dayA - dayB;
+            });
+
+            renderLeaveList();
+
+            // Show workspace container
+            document.getElementById('workspaceContainer').classList.remove('hidden');
+
+            // Build Header
+            let thead = document.getElementById('matrixHeader');
+            let hRow = '<tr><th class="p-1 w-8 text-center">S.No.</th><th class="p-1">Course / Branch Allocation</th>';
+            dates.forEach((d) => {
+                let dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+                let dateNum = d.getDate();
+                let isSun = (d.getDay() === 0);
+                let colClass = isSun ? "sunday-col" : "";
+                hRow += `<th class="p-1 text-center w-10 ${colClass}">${dateNum}<br><span class="text-[7.5px] font-normal">${dayName}</span></th>`;
+            });
+            hRow += '<th class="p-1 text-center w-12 no-print">Move / Del</th></tr>';
+            thead.innerHTML = hRow;
+
+            // Build Body
+            let tbody = document.getElementById('matrixBody');
+            tbody.innerHTML = '';
+
+            branchCourses.forEach((group, gIdx) => {
+                let branchRow = `<tr class="branch-header"><td colspan="${dates.length + 3}" class="p-1 uppercase text-[9.5px]">${group.branch}</td></tr>`;
+                tbody.innerHTML += branchRow;
+
+                group.courses.forEach((course, cIdx) => {
+                    let tr = `<tr class="hover:bg-slate-50">`;
+                    tr += `<td class="p-1 text-center font-medium text-slate-600 text-[10px]">${course.code}</td>`;
+                    tr += `<td class="p-1 font-bold text-slate-900 text-[11px]">${course.name}</td>`;
+
+                    dates.forEach((d, dIdx) => {
+                        let dateIso = d.toISOString().split('T')[0];
+                        let isSun = (d.getDay() === 0);
+                        let cellClass = isSun ? "sunday-col" : "";
+                        let key = `${gIdx}_${cIdx}_${dIdx}`;
+                        let assignedCode = allocations[key] || "";
+
+                        let selectOptions = '<option value="">--</option>';
+                        facultyList.forEach(f => {
+                            let selected = (assignedCode === f.code) ? "selected" : "";
+                            selectOptions += `<option value="${f.code}" ${selected}>${f.code}</option>`;
+                        });
+
+                        let assignedObj = facultyList.find(f => f.code === assignedCode);
+                        let selectStyle = assignedObj ? `background-color: ${assignedObj.hexBg}; color: ${assignedObj.hexText}; width: 40px;` : "width: 40px;";
+
+                        tr += `<td class="p-0.5 text-center ${cellClass}">
+                            <select id="sel_${key}" style="${selectStyle}" onchange="assignFaculty('${key}', '${dateIso}', this.value)" class="faculty-select border border-slate-300 rounded px-0.5 py-0.5 outline-none text-center transition">
+                                ${selectOptions}
+                            </select>
+                        </td>`;
+                    });
+
+                    tr += `<td class="p-0.5 text-center whitespace-nowrap no-print text-[10px]">
+                        <button onclick="moveCourseRow(${gIdx}, ${cIdx}, -1)" class="text-slate-600 hover:text-blue-700 p-0.5" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveCourseRow(${gIdx}, ${cIdx}, 1)" class="text-slate-600 hover:text-blue-700 p-0.5" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button onclick="removeCourseRow(${gIdx}, ${cIdx})" class="text-rose-600 hover:text-rose-800 p-0.5" title="Remove"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                    tr += `</tr>`;
+                    tbody.innerHTML += tr;
+                });
+            });
+        }
+
+        function assignFaculty(key, dateIso, facCode) {
+            let selElem = document.getElementById(`sel_${key}`);
+            if(!facCode) {
+                delete allocations[key];
+                selElem.style.backgroundColor = "";
+                selElem.style.color = "";
+                selElem.style.width = "40px";
+                selElem.style.setProperty('--print-bg', 'transparent');
+                selElem.style.setProperty('--print-color', 'black');
+                return;
+            }
+
+            let facObj = facultyList.find(f => f.code === facCode);
+            
+            // Check Leave Conflict with OK/Cancel confirmation
+            let onLeave = leaveRecords.some(l => dateIso >= l.from && dateIso <= l.to && (l.faculty === facObj.name || l.faculty.includes(facObj.name.split(' ')[0])));
+            if(onLeave) {
+                let confirmAssign = confirm(`WARNING: ${facObj.name} is on LEAVE on ${dateIso}!\nDo you still want to assign this faculty?`);
+                if(!confirmAssign) {
+                    selElem.value = "";
+                    delete allocations[key];
+                    selElem.style.backgroundColor = "";
+                    selElem.style.color = "";
+                    selElem.style.width = "40px";
+                    return;
+                }
+            }
+
+            selElem.style.backgroundColor = facObj.hexBg;
+            selElem.style.color = facObj.hexText;
+            selElem.style.width = "40px";
+            selElem.style.setProperty('--print-bg', facObj.hexBg);
+            selElem.style.setProperty('--print-color', facObj.hexText);
+
+            allocations[key] = facCode;
+        }
+
+        function moveCourseRow(gIdx, cIdx, direction) {
+            let targetIdx = cIdx + direction;
+            let courses = branchCourses[gIdx].courses;
+            if(targetIdx < 0 || targetIdx >= courses.length) return;
+
+            let temp = courses[cIdx];
+            courses[cIdx] = courses[targetIdx];
+            courses[targetIdx] = temp;
+            generateMatrix();
+        }
+
+        function addNewCourseRow() {
+            let branchName = prompt("Select Branch (Synergy, Mumbai, New Delhi, MOLTA, DNS Supplementary):", "Synergy");
+            if(!branchName) return;
+            let bObj = branchCourses.find(b => b.branch.toLowerCase() === branchName.toLowerCase());
+            if(!bObj) { alert('Branch not found'); return; }
+
+            let code = prompt("Enter S.No. / Course Code:", "25");
+            if(!code) return;
+            let name = prompt("Enter Course Name:", "New Course Name");
+            if(!name) return;
+
+            bObj.courses.push({ code: code, name: name });
+            generateMatrix();
+        }
+
+        function removeCourseRow(gIdx, cIdx) {
+            if(confirm("Are you sure you want to remove this course row?")) {
+                branchCourses[gIdx].courses.splice(cIdx, 1);
+                generateMatrix();
+            }
+        }
+    </script>
+</body>
+</html>
